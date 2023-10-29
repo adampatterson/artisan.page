@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Contracts\Console\Kernel;
+use Illuminate\Support\Str;
 
 require __DIR__.'/vendor/autoload.php';
 
@@ -10,7 +11,12 @@ $commands = $app->make(Kernel::class)->all();
 
 echo collect($commands)->sortBy(function ($command) {
   return $command->getName();
-})->map(function ($command) {
+})
+  // Filter out commands that are not Filament commands
+  ->reject(function ($command) {
+    return ! Str::contains($command->getName(), 'filament');
+  })
+  ->map(function ($command) {
   return [
     'name' => $command->getName(),
     'description' => $command->getDescription(),
